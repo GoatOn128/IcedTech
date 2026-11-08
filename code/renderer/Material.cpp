@@ -2948,7 +2948,9 @@ idMaterial::UpdateVirtualMaterialOffsetImage
 ===================
 */
 void idMaterial::UpdateVirtualMaterialOffsetImage(void) const {
-	virtualPageOffsetsImage->Bind();
+	// Go through the getter so a purged or default-sized offsets image gets
+	// rebuilt before we upload into it.
+	GetVirtualPageOffsetsImage()->Bind();
 
 	for (int i = 0; i < virtualTexturePageOffsetNumMips; i++)
 	{
@@ -3004,7 +3006,7 @@ void idMaterial::CreateVirtualPageOffsetsTexture(void) {
 	opts.colorFormat = CFM_DEFAULT;
 	opts.numLevels = virtualTexturePageOffsetNumMips;
 	opts.textureType = TT_2D;
-	opts.isPersistant = false;
+	opts.isPersistant = true;
 	opts.width = virtualTextureWidthInPages[0];
 	opts.height = virtualTextureHeightInPages[0];
 	opts.numMSAASamples = 0;
@@ -3024,6 +3026,28 @@ idMaterial::GetVirtualPageOffsetsImage
 */
 idImage	*idMaterial::GetVirtualPageOffsetsImage(void) const {
 	idImage *image = virtualPageOffsetsImage;
+
+	// The offsets image has no file on disk. If it gets purged by a level load
+	// or an image reload, a plain Bind would reload it as an 8x8 default and
+	// every offset upload would fail. Rebuild it at the right size and upload
+	// the current offsets instead.
+	if (image != nullptr && (!image->IsLoaded() ||
+		image->GetUploadWidth() != virtualTextureWidthInPages[0] ||
+		image->GetUploadHeight() != virtualTextureHeightInPages[0] ||
+		image->GetOpts().numLevels != virtualTexturePageOffsetNumMips)) {
+		idImageOpts opts;
+		opts.format = FMT_RG16;
+		opts.colorFormat = CFM_DEFAULT;
+		opts.numLevels = virtualTexturePageOffsetNumMips;
+		opts.textureType = TT_2D;
+		opts.isPersistant = true;
+		opts.width = virtualTextureWidthInPages[0];
+		opts.height = virtualTextureHeightInPages[0];
+		opts.numMSAASamples = 0;
+
+		image->AllocImage(opts, TF_DEFAULT, TR_REPEAT);
+		UpdateVirtualMaterialOffsetImage();
+	}
 
 	return image;
 }
