@@ -43,9 +43,10 @@ void RB_T_FillFeedbackPass(const drawSurf_t *surf) {
 		return;
 	}
 
-	// translucent surfaces don't put anything in the depth buffer and don't
-	// test against it, which makes them fail the mirror clip plane operation
-	if (shader->Coverage() == MC_TRANSLUCENT) {
+	// Translucent surfaces still need to emit feedback pixels so their virtual
+	// texture pages get assigned. Only skip them when a mirror clip plane is
+	// active, because they fail the clip plane operation there.
+	if (shader->Coverage() == MC_TRANSLUCENT && backEnd.viewDef->numClipPlanes > 0) {
 		return;
 	}
 
