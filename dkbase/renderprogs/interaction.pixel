@@ -167,5 +167,4 @@ void main( PS_IN fragment, out PS_OUT result ) {
 
 	result.color.xyz = ( diffuseColor + pbr ) * lightColor; // * fragment.color.xyz;
 	result.color.w = 1.0;
-	result.color1 = float4(pbr.x, pbr.y, pbr.z, 0);
 }
