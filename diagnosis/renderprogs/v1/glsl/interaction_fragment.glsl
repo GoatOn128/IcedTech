@@ -105,7 +105,7 @@ layout(location = 0) out vec4 d3_FragColor;
 
 vec2 GetPhysicalTexCoords (vec2 texCoords , int isNormal ) {
 	vec2 deviceTexCoords = fract ( texCoords ) ;
-	if ( isNormal == 0 )
+	if ( isNormal == 1 )
 	{
 		deviceTexCoords. y = 1.0 - deviceTexCoords. y ;
 	}

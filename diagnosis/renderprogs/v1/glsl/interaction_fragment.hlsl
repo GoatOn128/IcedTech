@@ -79,7 +79,7 @@ float2 GetPhysicalTexCoords (float2 texCoords , int isNormal )  {
 float2 deviceTexCoords = frac ( texCoords ) ; 
 
 
-if ( isNormal == 0 ) 
+if ( isNormal == 1 ) 
 { 
 deviceTexCoords . y = 1.0 - deviceTexCoords . y ; 
 } 

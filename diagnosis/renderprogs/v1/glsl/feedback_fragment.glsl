@@ -50,7 +50,7 @@ ivec2 ComputeMipMapLevel (isampler2D pageOffsetTexture , vec2 texCoords , float 
 	texCoords = texCoords * vec2 ( width , height ) ;
 	return ivec2 ( 0 , 0 ) ;
 }
-uniform sampler2D samp0;
+uniform isampler2D samp0;
 
 in vec4 gl_FragCoord;
 in vec2 vofi_TexCoord0;
